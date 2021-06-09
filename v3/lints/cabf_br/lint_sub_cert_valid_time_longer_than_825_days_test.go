@@ -47,3 +47,27 @@ func TestSubCertValidTime825Days(t *testing.T) {
 		t.Errorf("%s: expected %s, got %s", inputPath, expected, out.Status)
 	}
 }
+
+func TestSubCertValidTimeExactly825DaysInclusive(t *testing.T) {
+	// This certificate has a notBefore of XXX and a notAfter of YYY, giving it
+	// a validity period (calculated inclusive of both endpoints, as per RFC5280)
+	// of exactly 825 days (71280000 seconds).
+	inputPath := "subCertExactly825DaysInclusive.pem"
+	expected := lint.Pass
+	out := test.TestLint("e_sub_cert_valid_time_longer_than_825_days", inputPath)
+	if out.Status != expected {
+		t.Errorf("%s: expected %s, got %s", inputPath, expected, out.Status)
+	}
+}
+
+func TestSubCertValidTimeExactly825DaysExclusive(t *testing.T) {
+	// This certificate has a notBefore of XXX and a notAfter of YYY, giving it
+	// a validity period (calculated inclusive of both endpoints, as per RFC5280)
+	// of exactly 825 days and one second (71280001 seconds).
+	inputPath := "subCertExactly825DaysExclusive.pem"
+	expected := lint.Error
+	out := test.TestLint("e_sub_cert_valid_time_longer_than_825_days", inputPath)
+	if out.Status != expected {
+		t.Errorf("%s: expected %s, got %s", inputPath, expected, out.Status)
+	}
+}
